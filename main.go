@@ -8,7 +8,11 @@ import (
 	"time"
 )
 
-var countId = 0
+const (
+	STATUS_TODO        = "todo"
+	STATUS_IN_PROGRESS = "in-progress"
+	STATUS_DONE        = "done"
+)
 
 type Database struct {
 	CountID int
@@ -28,20 +32,37 @@ func main() {
 	var operation = args[1]
 	switch operation {
 	case "list":
-		list()
+		list(args)
 	case "add":
 		add(args)
 	case "update":
 		update(args)
 	case "delete":
 		delete(args)
+	case "mark-in-progress":
+		updateStatus(args[2], STATUS_IN_PROGRESS)
+	case "mark-done":
+		updateStatus(args[2], STATUS_DONE)
 	default:
 		fmt.Println("Method not found!")
 	}
 }
 
-func list() {
+func list(args []string) {
+	fmt.Println("List of all tasks")
 	database := getDatabase()
+
+	if len(args) > 2 {
+		switch args[2] {
+		case "done":
+			database.Tasks = filterList(database.Tasks, STATUS_DONE)
+		case "todo":
+			database.Tasks = filterList(database.Tasks, STATUS_TODO)
+		case "in-progress":
+			database.Tasks = filterList(database.Tasks, STATUS_IN_PROGRESS)
+		}
+	}
+
 	for _, v := range database.Tasks {
 		fmt.Printf("ID: %v, ", v.ID)
 		fmt.Printf("Description: %v, ", v.Description)
@@ -51,6 +72,18 @@ func list() {
 	}
 }
 
+func filterList(list []Task, status string) []Task {
+	var filterList []Task
+
+	for _, v := range list {
+		if v.Status == status {
+			filterList = append(filterList, v)
+		}
+	}
+
+	return filterList
+}
+
 func add(args []string) {
 	database := getDatabase()
 	database.CountID++
@@ -58,14 +91,14 @@ func add(args []string) {
 	var newTask = Task{
 		ID:          database.CountID,
 		Description: args[2],
-		Status:      "todo",
+		Status:      STATUS_TODO,
 		CreatedAt:   time.Now(),
 	}
 
 	database.Tasks = append(database.Tasks, newTask)
 
 	saveDatabase(database)
-	fmt.Println("Add task " + strconv.Itoa(database.CountID))
+	fmt.Printf("Task added successfully (ID: %d) \n", database.CountID)
 }
 
 func update(args []string) {
@@ -83,7 +116,7 @@ func update(args []string) {
 	}
 
 	saveDatabase(database)
-	fmt.Println("Update task " + args[2])
+	fmt.Printf("Task updated successfully (ID: %s) \n", args[2])
 }
 
 func delete(args []string) {
@@ -100,7 +133,24 @@ func delete(args []string) {
 	}
 
 	saveDatabase(database)
-	fmt.Println("Delete task " + args[2])
+	fmt.Printf("Task deleted successfully (ID: %s) \n", args[2])
+}
+
+func updateStatus(id string, status string) {
+	database := getDatabase()
+	idConvert, err := strconv.Atoi(id)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < len(database.Tasks); i++ {
+		if database.Tasks[i].ID == idConvert {
+			database.Tasks[i].Status = status
+		}
+	}
+
+	saveDatabase(database)
+	fmt.Printf("Task mark to %s successfully (ID: %s) \n", status, id)
 }
 
 func getDatabase() Database {
