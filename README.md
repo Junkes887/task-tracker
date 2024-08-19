@@ -33,3 +33,6 @@ task-cli list in-progress`
 * Status: The status of the task (todo, in-progress, done)
 * CreatedAt: The date and time when the task was created
 * UpdatedAt: The date and time when the task was last updated
+
+### Idea
+Project idea basis [roadmap.sh](https://roadmap.sh/projects/task-tracker)
