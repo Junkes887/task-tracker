@@ -1,5 +1,8 @@
 # Task Tracker
 
+![coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
+
+
 Task tracker is a project used to track and manage your tasks.
 
 Example
@@ -7,24 +10,24 @@ The list of commands and their usage is given below:
 
 ````bash
 # Adding a new task
-task-cli add "Buy groceries"
+go run main.go add "Buy groceries"
 # Output: Task added successfully (ID: 1)
 
 # Updating and deleting tasks
-task-cli update 1 "Buy groceries and cook dinner"
-task-cli delete 1
+go run main.go update 1 "Buy groceries and cook dinner"
+go run main.go delete 1
 
 # Marking a task as in progress or done
-task-cli mark-in-progress 1
-task-cli mark-done 1
+go run main.go mark-in-progress 1
+go run main.go mark-done 1
 
 # Listing all tasks
-task-cli list
+go run main.go list
 
 # Listing tasks by status
-task-cli list done
-task-cli list todo
-task-cli list in-progress`
+go run main.go list done
+go run main.go list todo
+go run main.go list in-progress`
 ````
 ### Task Properties
 
@@ -36,3 +39,14 @@ task-cli list in-progress`
 
 ### Idea
 Project idea basis [roadmap.sh](https://roadmap.sh/projects/task-tracker)
+
+### Test
+
+````bash
+# Run test
+go test -cover
+
+# Run test and view in html
+go test -coverprofile cover.out 
+go tool cover -html="cover.out"
+````
